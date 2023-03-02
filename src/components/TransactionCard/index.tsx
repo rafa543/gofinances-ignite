@@ -1,4 +1,4 @@
-import { 
+import {
     Container,
     Title,
     Amount,
@@ -9,18 +9,39 @@ import {
     Date
 } from "./styles";
 
-export function TrasactionCard() {
+interface Category {
+    name: string;
+    icon: string
+}
+
+export interface TrasactionCardProps {
+    type: 'positive' | 'negative';
+    title: string;
+    amount: string;
+    category: Category;
+    date: string
+}
+
+interface Props {
+    data: TrasactionCardProps
+
+}
+
+export function TrasactionCard({data}: Props) {
     return (
         <Container>
-            <Title>Desenvolvimento de site</Title>
-            <Amount>R$ 12.000,00</Amount>
+            <Title>{data.title}</Title>
+            <Amount type={data.type}>
+                {data.type === 'negative' && "- "}
+                {data.amount}
+            </Amount>
 
             <Footer>
                 <Category>
-                    <Icon name="dollar-sign"/>
-                    <CategoryName>Vendas</CategoryName>
+                    <Icon name={data.category.icon} />
+                    <CategoryName>{data.category.name}</CategoryName>
                 </Category>
-                <Date>28/08/2022</Date>
+                <Date>{data.date}</Date>
             </Footer>
         </Container>
     )

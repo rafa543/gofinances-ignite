@@ -10,6 +10,7 @@ import {
 } from '@expo-google-fonts/poppins'
 import { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
+import { Register } from './src/screens/Register';
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
@@ -42,7 +43,7 @@ export default function App() {
   return (
     <View onLayout={onLayoutRootView} style={{width: '100%', height: '100%'}}>
       <ThemeProvider theme={theme}>
-        <Dashboard />
+        <Register />
       </ThemeProvider>
     </View>
   );

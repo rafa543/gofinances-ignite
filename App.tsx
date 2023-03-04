@@ -44,7 +44,7 @@ export default function App() {
   return (
     <View onLayout={onLayoutRootView} style={{width: '100%', height: '100%'}}>
       <ThemeProvider theme={theme}>
-        <CategorySelect />
+        <Register />
       </ThemeProvider>
     </View>
   );

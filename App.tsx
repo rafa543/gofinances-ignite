@@ -11,6 +11,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Register } from './src/screens/Register';
+import { CategorySelect } from './src/screens/CategorySelect';
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
@@ -43,7 +44,7 @@ export default function App() {
   return (
     <View onLayout={onLayoutRootView} style={{width: '100%', height: '100%'}}>
       <ThemeProvider theme={theme}>
-        <Register />
+        <CategorySelect />
       </ThemeProvider>
     </View>
   );

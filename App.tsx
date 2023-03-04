@@ -1,17 +1,17 @@
-import { ThemeProvider } from 'styled-components'
-import { Dashboard } from './src/screens/Dashboard';
-import theme from './src/global/styles/theme';
-import * as SplashScreen from 'expo-splash-screen';
-import * as Font from 'expo-font';
 import {
   Poppins_400Regular,
   Poppins_500Medium,
   Poppins_700Bold
-} from '@expo-google-fonts/poppins'
+} from '@expo-google-fonts/poppins';
+import * as Font from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 import { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
+import { ThemeProvider } from 'styled-components';
+import theme from './src/global/styles/theme';
 import { Register } from './src/screens/Register';
-import { CategorySelect } from './src/screens/CategorySelect';
+import { NavigationContainer } from '@react-navigation/native'
+import { AppRoutes } from './src/routes/app.routes';
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
@@ -20,7 +20,7 @@ export default function App() {
     async function prepare() {
       try {
         await SplashScreen.preventAutoHideAsync();
-        await Font.loadAsync({Poppins_400Regular, Poppins_500Medium, Poppins_700Bold});
+        await Font.loadAsync({ Poppins_400Regular, Poppins_500Medium, Poppins_700Bold });
       } catch (e) {
         console.warn(e);
       } finally {
@@ -42,10 +42,12 @@ export default function App() {
   }
 
   return (
-    <View onLayout={onLayoutRootView} style={{width: '100%', height: '100%'}}>
-      <ThemeProvider theme={theme}>
-        <Register />
-      </ThemeProvider>
+    <View onLayout={onLayoutRootView} style={{ width: '100%', height: '100%' }}>
+      <NavigationContainer>
+        <ThemeProvider theme={theme}>
+          <AppRoutes />
+        </ThemeProvider>
+      </NavigationContainer>
     </View>
   );
 }

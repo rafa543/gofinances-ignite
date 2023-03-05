@@ -1,3 +1,5 @@
+import 'intl'
+import 'intl/locale-data/jsonp/pt-BR'
 import {
   Poppins_400Regular,
   Poppins_500Medium,

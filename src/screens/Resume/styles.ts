@@ -42,6 +42,12 @@ export const MonthSelect = styled.View`
 export const MonthSelectButton = styled.TouchableOpacity`
     
 `
+
+export const LoadContainer = styled.View`
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+`
 export const MonthSelectIcon = styled(Feather)`
     font-size: ${RFValue(24)}px;
 `

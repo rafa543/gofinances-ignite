@@ -14,7 +14,7 @@ import theme from './src/global/styles/theme';
 import { Register } from './src/screens/Register';
 import { NavigationContainer } from '@react-navigation/native'
 import { AppRoutes } from './src/routes/app.routes';
-
+import { StatusBar} from 'react-native'
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
 
@@ -47,6 +47,7 @@ export default function App() {
     <View onLayout={onLayoutRootView} style={{ width: '100%', height: '100%' }}>
       <NavigationContainer>
         <ThemeProvider theme={theme}>
+          <StatusBar barStyle="light-content"/>
           <AppRoutes />
         </ThemeProvider>
       </NavigationContainer>

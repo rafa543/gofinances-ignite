@@ -1,18 +1,20 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { HighlightCard } from '../../components/HighlightCard'
 import { TrasactionCard, TrasactionCardProps } from '../../components/TransactionCard'
-
-import { Container, Header, UserWrapper, UserInfo, Photo, User, UserGreeting, UserName, Icon, HighlightCards, Transactions, Title, TransactionList } from './styles'
+import { ActivityIndicator } from 'react-native'
+import { Container, Header, UserWrapper, UserInfo, Photo, User, UserGreeting, UserName, Icon, HighlightCards, Transactions, Title, TransactionList, LoadContainer } from './styles'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { format } from "date-fns";
 import { useFocusEffect } from '@react-navigation/native';
+import { useTheme } from 'styled-components/native'
 
 export interface DataListProps extends TrasactionCardProps {
     id: string
 }
 
 interface HightLightProps {
-    amount: string
+    amount: string;
+    lastTransaction: string
 }
 
 export interface HightLightData {
@@ -21,8 +23,21 @@ export interface HightLightData {
     total: HightLightProps;
 }
 export function Dashboard() {
+    const [isLoading, setIsLoading] = useState(true)
     const [transactions, setTransactions] = useState<DataListProps[]>([])
     const [hightLightData, setHighLightData] = useState<HightLightData>({} as HightLightData)
+
+    const theme = useTheme()
+
+    function getLastTransactionDate(collection: DataListProps[], type: 'positive' | 'negative') {
+        const lastTransactions = new Date(
+            Math.max.apply(Math, transactions
+                .filter(transaction => transaction.type === type)
+                .map(transaction => new Date(transaction.date).getTime())
+            ))
+
+        return `${lastTransactions.getDate()} de ${lastTransactions.toLocaleString('pt-BR', {month: 'long'})}`
+    }
 
     async function loadTransactions() {
         try {
@@ -30,7 +45,7 @@ export function Dashboard() {
             const dataKey = '@gofinances:transactions'
             const response = await AsyncStorage.getItem(dataKey)
             const transactions = response ? JSON.parse(response) : []
-            
+
             let entriesTotal = 0;
             let expensiveTotal = 0
 
@@ -62,28 +77,37 @@ export function Dashboard() {
 
             const total = entriesTotal - expensiveTotal
 
+            const lastTransactionEntries = getLastTransactionDate(transactions, 'positive')
+            const lastTransactionExpenses = getLastTransactionDate(transactions, 'negative')
+            const totalInterval = `01 a ${lastTransactionExpenses}`
+
             setHighLightData({
                 entries: {
                     amount: entriesTotal.toLocaleString('pt-BR', {
                         style: 'currency',
                         currency: 'BRL'
-                    })
+                    }),
+                    lastTransaction: `Última entrada dia ${lastTransactionEntries}`
                 },
                 expensive: {
                     amount: expensiveTotal.toLocaleString('pt-BR', {
                         style: 'currency',
                         currency: 'BRL'
-                    })
+                    }),
+                    lastTransaction: `Última saida dia ${lastTransactionExpenses}`
                 },
                 total: {
                     amount: total.toLocaleString('pt-BR', {
                         style: 'currency',
-                        currency: 'BRL'
-                    })
+                        currency: 'BRL',
+                    }),
+                    lastTransaction: totalInterval
                 }
             })
 
             setTransactions(transactionsFormatted)
+            
+            setIsLoading(false)
         } catch (error) {
             console.log(error)
         }
@@ -105,52 +129,60 @@ export function Dashboard() {
 
     return (
         <Container>
-            <Header>
-                <UserWrapper>
-                    <UserInfo>
-                        <Photo source={{ uri: "https://avatars.githubusercontent.com/u/54370234?v=4" }} />
-                        <User>
-                            <UserGreeting>Olá,</UserGreeting>
-                            <UserName>Rodrigo</UserName>
-                        </User>
-                    </UserInfo>
-                    <Icon name="power" />
-                </UserWrapper>
-            </Header>
 
-            <HighlightCards>
-                <HighlightCard
-                    title='Entradas'
-                    amount={hightLightData.entries.amount}
-                    lastTransaction='Ultima entrada dia 12 de abril'
-                    type='up'
-                />
-                <HighlightCard
-                    title='Saidas'
-                    amount={hightLightData.expensive.amount}
-                    lastTransaction='Ultima saída dia 12 de abril'
-                    type='down'
-                />
-                <HighlightCard
-                    title='Total'
-                    amount={hightLightData.total.amount}
-                    lastTransaction='Ultima entrada dia 12 de abril'
-                    type='total'
-                />
-            </HighlightCards>
+            {
+                isLoading ?
+                    <LoadContainer>
+                        <ActivityIndicator color={theme.colors.primary} size="large" />
+                    </LoadContainer> :
+                    <>
+                        <Header>
+                            <UserWrapper>
+                                <UserInfo>
+                                    <Photo source={{ uri: "https://avatars.githubusercontent.com/u/54370234?v=4" }} />
+                                    <User>
+                                        <UserGreeting>Olá,</UserGreeting>
+                                        <UserName>Rodrigo</UserName>
+                                    </User>
+                                </UserInfo>
+                                <Icon name="power" />
+                            </UserWrapper>
+                        </Header>
 
-            <Transactions>
-                <Title>Listagem</Title>
+                        <HighlightCards>
+                            <HighlightCard
+                                title='Entradas'
+                                amount={hightLightData.entries.amount}
+                                lastTransaction={hightLightData.expensive.lastTransaction}
+                                type='up'
+                            />
+                            <HighlightCard
+                                title='Saidas'
+                                amount={hightLightData.expensive.amount}
+                                lastTransaction={hightLightData.expensive.lastTransaction}
+                                type='down'
+                            />
+                            <HighlightCard
+                                title='Total'
+                                amount={hightLightData.total.amount}
+                                lastTransaction={hightLightData.total.lastTransaction}
+                                type='total'
+                            />
+                        </HighlightCards>
 
-                <TransactionList
-                    data={transactions}
-                    keyExtractor={item => item.id}
-                    renderItem={({ item }) => <TrasactionCard data={item} />}
-                />
+                        <Transactions>
+                            <Title>Listagem</Title>
+
+                            <TransactionList
+                                data={transactions}
+                                keyExtractor={item => item.id}
+                                renderItem={({ item }) => <TrasactionCard data={item} />}
+                            />
 
 
-            </Transactions>
-
+                        </Transactions>
+                    </>
+            }
         </Container>
     )
 }

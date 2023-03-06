@@ -16,6 +16,9 @@ import { NavigationContainer } from '@react-navigation/native'
 import { AppRoutes } from './src/routes/app.routes';
 import { StatusBar} from 'react-native'
 import { SignIn } from './src/screens/SignIn';
+
+import { AuthProvider } from './src/hooks/auth';
+
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
 
@@ -50,7 +53,9 @@ export default function App() {
         <ThemeProvider theme={theme}>
           <StatusBar barStyle="light-content"/>
           {/* <AppRoutes /> */}
-          <SignIn/>
+          <AuthProvider>
+            <SignIn/>
+          </AuthProvider>
         </ThemeProvider>
       </NavigationContainer>
     </View>

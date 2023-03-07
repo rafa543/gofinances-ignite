@@ -11,12 +11,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { ThemeProvider } from 'styled-components';
 import theme from './src/global/styles/theme';
-import { Register } from './src/screens/Register';
-import { NavigationContainer } from '@react-navigation/native'
-import { AppRoutes } from './src/routes/app.routes';
 import { StatusBar} from 'react-native'
 import { SignIn } from './src/screens/SignIn';
 
+import { Routes } from './src/routes'
 import { AuthProvider } from './src/hooks/auth';
 
 export default function App() {
@@ -49,15 +47,13 @@ export default function App() {
 
   return (
     <View onLayout={onLayoutRootView} style={{ width: '100%', height: '100%' }}>
-      <NavigationContainer>
         <ThemeProvider theme={theme}>
           <StatusBar barStyle="light-content"/>
           {/* <AppRoutes /> */}
           <AuthProvider>
-            <SignIn/>
+            <Routes/>
           </AuthProvider>
         </ThemeProvider>
-      </NavigationContainer>
     </View>
   );
 }

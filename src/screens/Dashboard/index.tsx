@@ -2,11 +2,12 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { HighlightCard } from '../../components/HighlightCard'
 import { TrasactionCard, TrasactionCardProps } from '../../components/TransactionCard'
 import { ActivityIndicator } from 'react-native'
-import { Container, Header, UserWrapper, UserInfo, Photo, User, UserGreeting, UserName, Icon, HighlightCards, Transactions, Title, TransactionList, LoadContainer } from './styles'
+import { Container, Header, UserWrapper, UserInfo, Photo, User, UserGreeting, UserName, Icon, HighlightCards, Transactions, Title, TransactionList, LoadContainer, LogoutButton } from './styles'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { format } from "date-fns";
 import { useFocusEffect } from '@react-navigation/native';
 import { useTheme } from 'styled-components/native'
+import { useAuth } from '../../hooks/auth'
 
 export interface DataListProps extends TrasactionCardProps {
     id: string
@@ -28,6 +29,7 @@ export function Dashboard() {
     const [hightLightData, setHighLightData] = useState<HightLightData>({} as HightLightData)
 
     const theme = useTheme()
+    const { signOut, user } = useAuth()
 
     function getLastTransactionDate(collection: DataListProps[], type: 'positive' | 'negative') {
         const lastTransactions = new Date(
@@ -36,7 +38,7 @@ export function Dashboard() {
                 .map(transaction => new Date(transaction.date).getTime())
             ))
 
-        return `${lastTransactions.getDate()} de ${lastTransactions.toLocaleString('pt-BR', {month: 'long'})}`
+        return `${lastTransactions.getDate()} de ${lastTransactions.toLocaleString('pt-BR', { month: 'long' })}`
     }
 
     async function loadTransactions() {
@@ -106,7 +108,7 @@ export function Dashboard() {
             })
 
             setTransactions(transactionsFormatted)
-            
+
             setIsLoading(false)
         } catch (error) {
             console.log(error)
@@ -116,11 +118,6 @@ export function Dashboard() {
 
     useEffect(() => {
         loadTransactions()
-        // async function apagar() {
-        //     await AsyncStorage.removeItem('@gofinances:transactions')
-
-        // }
-        // apagar()
     }, [])
 
     useFocusEffect(useCallback(() => {
@@ -139,13 +136,15 @@ export function Dashboard() {
                         <Header>
                             <UserWrapper>
                                 <UserInfo>
-                                    <Photo source={{ uri: "https://avatars.githubusercontent.com/u/54370234?v=4" }} />
+                                    <Photo source={{ uri: user.picture }} />
                                     <User>
                                         <UserGreeting>Olá,</UserGreeting>
-                                        <UserName>Rodrigo</UserName>
+                                        <UserName>{user.name}</UserName>
                                     </User>
                                 </UserInfo>
-                                <Icon name="power" />
+                                <LogoutButton onPress={signOut}>
+                                    <Icon name="power" />
+                                </LogoutButton>
                             </UserWrapper>
                         </Header>
 

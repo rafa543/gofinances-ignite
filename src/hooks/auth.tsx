@@ -3,6 +3,7 @@ import * as AuthSession from 'expo-auth-session'
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { Photo } from '../screens/Dashboard/styles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { boolean } from 'yup';
 
 const { CLIENT_ID } = process.env
 const { REDIRECT_URI } = process.env
@@ -15,13 +16,15 @@ interface User {
     id: string;
     name: string;
     email: string
-    photo?: string
+    picture?: string
 }
 
 interface AuthContextData {
     user: User;
     signInWithGoogle(): Promise<void>
     signInWithApple(): Promise<void>
+    signOut(): Promise<void>
+    userStorageLoading: boolean
 }
 
 interface AuthorizationResponse {
@@ -58,7 +61,7 @@ function AuthProvider({ children }: AuthProviderProps) {
                     id: userInfo.id,
                     email: userInfo.email,
                     name: userInfo.given_name,
-                    photo: userInfo.picture
+                    picture: userInfo.picture
                 })
 
                 setUser(userInfo)
@@ -80,11 +83,14 @@ function AuthProvider({ children }: AuthProviderProps) {
             })
 
             if (credential) {
+                const name = credential.fullName!.givenName!
+                const photo = `https://ui-avatars.com/api/?name=${name}&length=1`
+                
                 const userLogged = {
                     id: String(credential.user),
                     email: credential.email!,
-                    name: credential.fullName!.givenName!,
-                    photo: undefined
+                    name,
+                    photo,
                 }
 
                 setUser(userLogged)
@@ -95,6 +101,11 @@ function AuthProvider({ children }: AuthProviderProps) {
         } catch (error: any) {
             throw new Error(error)
         }
+    }
+
+    async function signOut() {
+        setUser({} as User);
+        await AsyncStorage.removeItem(userStorageKey)
     }
 
     useEffect(() => {
@@ -114,7 +125,13 @@ function AuthProvider({ children }: AuthProviderProps) {
     }, [])
 
     return (
-        <AuthContext.Provider value={{ user, signInWithGoogle, signInWithApple }}>
+        <AuthContext.Provider value={{ 
+            user, 
+            signInWithGoogle, 
+            signInWithApple, 
+            signOut,
+            userStorageLoading
+        }}>
             {children}
         </AuthContext.Provider>
     )

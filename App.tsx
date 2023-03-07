@@ -11,14 +11,16 @@ import { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { ThemeProvider } from 'styled-components';
 import theme from './src/global/styles/theme';
-import { StatusBar} from 'react-native'
+import { StatusBar } from 'react-native'
 import { SignIn } from './src/screens/SignIn';
 
 import { Routes } from './src/routes'
-import { AuthProvider } from './src/hooks/auth';
+import { AuthProvider, useAuth } from './src/hooks/auth';
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
+
+  const { userStorageLoading } = useAuth()
 
   useEffect(() => {
     async function prepare() {
@@ -41,19 +43,19 @@ export default function App() {
     }
   }, [appIsReady]);
 
-  if (!appIsReady) {
+  if (!appIsReady || userStorageLoading) {
     return null;
   }
 
   return (
     <View onLayout={onLayoutRootView} style={{ width: '100%', height: '100%' }}>
-        <ThemeProvider theme={theme}>
-          <StatusBar barStyle="light-content"/>
-          {/* <AppRoutes /> */}
-          <AuthProvider>
-            <Routes/>
-          </AuthProvider>
-        </ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <StatusBar barStyle="light-content" />
+        {/* <AppRoutes /> */}
+        <AuthProvider>
+          <Routes />
+        </AuthProvider>
+      </ThemeProvider>
     </View>
   );
 }

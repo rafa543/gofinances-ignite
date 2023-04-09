@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "gofinances",
+    "slug": "gofinances",
+    "scheme": "gofinances",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#5636D3"
+    },
+    "icon": "./assets/icon.png",
+    "extra": {
+      "eas": {
+        "projectId": "f3cdebcf-00fb-46f6-88eb-18c040a1fd4a"
+      }
+    },
+    "owner": "rafaelaraujo"
+  }
+}
